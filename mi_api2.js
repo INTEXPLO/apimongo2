@@ -6,14 +6,17 @@ const app = express();
 
 app.use(express.json());
 
-// Reemplaza con tu URI de conexión a MongoDB
+// URI MongoDB
 const uri = "mongodb+srv://lusswicho045_db_user:ylPFTNSBNUy0zEEA@ecolog.alns23b.mongodb.net/?appName=ECOLOG";
 
 const client = new MongoClient(uri);
 
 let db;
 
-async function () {
+// Puerto para Render
+const PORT = process.env.PORT || 3000;
+
+async function conectarDB() {
 
     try {
 
@@ -34,23 +37,25 @@ conectarDB();
 app.post("/guardar", async (req, res) => {
 
     try {
-        
+
         const datos = req.body;
 
-        // Aquí puedes realizar validaciones o transformaciones si es necesario
-        console.log(datos)
-        console.log(datos.alias)
+        console.log(datos);
+        console.log(datos.alias);
+
         await db.collection("saves").updateOne(
+
             { id: datos.id },
+
             { $set: datos },
+
             { upsert: true }
         );
 
         console.log("SAVE GUARDADO 🔥");
 
         res.send("Guardado en MongoDB");
-        
-    // Si quieres enviar una respuesta con el ID del documento guardado, puedes hacerlo así:
+
     } catch(error) {
 
         console.log(error);
@@ -58,8 +63,15 @@ app.post("/guardar", async (req, res) => {
         res.status(500).send("Error");
     }
 });
-// Iniciar el servidor
-app.listen(3000, () => {
 
-    console.log("Servidor funcionando 🔥");
+// Ruta básica para probar si el server vive 😈
+app.get("/", (req, res) => {
+
+    res.send("API funcionando 🗣️🔥");
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+
+    console.log(`Servidor funcionando en puerto ${PORT} 🔥`);
 });
